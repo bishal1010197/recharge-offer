@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recharge</title>
+  <style>
+    body { font-family: sans-serif; background: #e6f0fa; padding: 20px; }
+    .container { max-width: 400px; margin: auto; background: darkblue; padding: 20px; border-radius: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; }
+    label { margin: 10px 0 5px; display: block; }
+    input, select, button { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #ccc; }
+    .plan { padding: 10px; border: 1px solid #ccc; border-radius: 10px; margin-bottom: 10px; cursor: pointer; }
+    .plan:hover, .plan.active { background: #dbeaff; border-color: #007bff; }
+    .btn { background: #007bff; color: white; border: none; font-weight: bold; }
+    .btn:hover { background: #0056b3; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Mobile Recharge</h2>
+    <label>Mobile Number</label>
+    <input type="tel" id="mobile" maxlength="10" placeholder="Enter 10-digit number"/>
+
+    <label>Select Operator</label>
+    <select id="operator">
+      <option value="jio">Jio</option>
+      <option value="airtel">Airtel</option>
+      <option value="vi">Vi</option>
+      <option value="bsnl">BSNL</option>
+    </select>
+
+    <label>Choose Plan</label>
+    <div id="plans"></div>
+
+    <button class="btn" onclick="goToPayment()">Recharge Now</button>
+  </div>
+
+  <script>
+    const plans = {
+      jio: [
+        { amount: 149, validity: "28 Days", data: "1.5GB/day", calls: "Unlimited" },
+        { amount: 299, validity: "56 Days", data: "1.5GB/day", calls: "Unlimited" }
+      ],
+      airtel: [
+        { amount: 159, validity: "28 Days", data: "2GB", calls: "Unlimited" },
+        { amount: 289, validity: "56 Days", data: "1.5GB/day", calls: "Unlimited" }
+      ],
+      vi: [
+        { amount: 149, validity: "28 Days", data: "1GB/day", calls: "Unlimited" },
+        { amount: 199, validity: "28 Days", data: "1.5GB/day", calls: "Unlimited" }
+      ],
+      bsnl: [
+        { amount: 147, validity: "30 Days", data: "1GB/day", calls: "Unlimited" },
+        { amount: 329, validity: "84 Days", data: "2GB/day", calls: "Unlimited" }
+      ]
+    };
+
+    const planList = document.getElementById("plans");
+    const operatorSelect = document.getElementById("operator");
+
+    function loadPlans() {
+      const operator = operatorSelect.value;
+      planList.innerHTML = '';
+      plans[operator].forEach((p, i) => {
+        const div = document.createElement('div');
+        div.className = 'plan';
+        div.innerHTML = `
+          <strong>₹${p.amount}</strong> - ${p.validity} <br>
+          📶 ${p.data}, ☎️ ${p.calls}
+        `;
+        div.onclick = () => {
+          document.querySelectorAll('.plan').forEach(el => el.classList.remove('active'));
+          div.classList.add('active');
+          div.dataset.selected = true;
+          planList.dataset.selectedIndex = i;
+        };
+        planList.appendChild(div);
+      });
+    }
+
+    function goToPayment() {
+      const mobile = document.getElementById("mobile").value;
+      const operator = operatorSelect.value;
+      const planIndex = planList.dataset.selectedIndex;
+
+      if (!mobile || mobile.length !== 10 || planIndex === undefined) {
+        alert("Please enter mobile number and select a plan.");
+        return;
+      }
+
+      const plan = plans[operator][planIndex];
+      const query = new URLSearchParams({
+        mobile,
+        operator,
+        amount: plan.amount,
+        validity: plan.validity,
+        data: plan.data,
+        calls: plan.calls
+      }).toString();
+
+      window.location.href = `payment.html?${query}`;
+    }
+
+    operatorSelect.addEventListener("change", loadPlans);
+    window.onload = loadPlans;
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UPI Payment</title>
+  <style>
+    body { font-family: sans-serif; background: #f0fff4; padding: 30px; }
+    .container { max-width: 400px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; }
+    .summary { margin: 20px 0; }
+    .summary p { margin: 5px 0; }
+    .btn { background: green; color: white; border: none; width: 100%; padding: 12px; font-weight: bold; border-radius: 10px; cursor: pointer; }
+    .btn:hover { background: darkgreen; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>💳 Confirm Recharge</h2>
+    <div class="summary" id="summary"></div>
+    <button class="btn" id="payBtn">Pay via UPI</button>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const mobile = params.get("mobile");
+    const operator = params.get("operator");
+    const amount = params.get("amount");
+    const validity = params.get("validity");
+    const data = params.get("data");
+    const calls = params.get("calls");
+
+    document.getElementById("summary").innerHTML = `
+      <p><strong>Mobile:</strong> ${mobile}</p>
+      <p><strong>Operator:</strong> ${operator.toUpperCase()}</p>
+      <p><strong>Plan:</strong> ₹${amount} - ${validity}</p>
+      <p><strong>Data:</strong> ${data}</p>
+      <p><strong>Calls:</strong> ${calls}</p>
+    `;
+
+    document.getElementById("payBtn").onclick = () => {
+      const upiLink =bishalkalita363@okaxis=${amount}&cu=INR&tn=Mobile+Recharge+for+${mobile}`;
+      window.location.href = upiLink;
+    };
+  </script>
+</body>
+</html>

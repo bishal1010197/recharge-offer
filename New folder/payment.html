@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UPI Payment</title>
+  <style>
+    body { font-family: sans-serif; background: #f0fff4; padding: 30px; }
+    .container { max-width: 400px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; }
+    .summary { margin: 20px 0; }
+    .summary p { margin: 5px 0; }
+    .btn { background: green; color: white; border: none; width: 100%; padding: 12px; font-weight: bold; border-radius: 10px; cursor: pointer; }
+    .btn:hover { background: darkgreen; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>💳 Confirm Recharge</h2>
+    <div class="summary" id="summary"></div>
+    <button class="btn" id="payBtn">Pay via UPI</button>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const mobile = params.get("mobile");
+    const operator = params.get("operator");
+    const amount = params.get("amount");
+    const validity = params.get("validity");
+    const data = params.get("data");
+    const calls = params.get("calls");
+
+    document.getElementById("summary").innerHTML = `
+      <p><strong>Mobile:</strong> ${mobile}</p>
+      <p><strong>Operator:</strong> ${operator.toUpperCase()}</p>
+      <p><strong>Plan:</strong> ₹${amount} - ${validity}</p>
+      <p><strong>Data:</strong> ${data}</p>
+      <p><strong>Calls:</strong> ${calls}</p>
+    `;
+
+    document.getElementById("payBtn").onclick = () => {
+      const upiLink = `upi://pay?pa=merchant@upi&pn=Recharge+Service&am=${amount}&cu=INR&tn=Mobile+Recharge+for+${mobile}`;
+      window.location.href = upiLink;
+    };
+  </script>
+</body>
+</html>
